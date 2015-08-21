@@ -21,9 +21,9 @@ var app = {
     // Application Constructor
     initialize: function() {
         this.bindEvents();
-        vk.init();
+        vk.init(false);
         $('#user_id').html(vk.getUserId())
-        chess_app.init("app")
+        chess_app.init("chess_app")
     },
     // Bind Event Listeners
     //

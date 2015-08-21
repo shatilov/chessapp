@@ -9,7 +9,7 @@ var vk = {
     },
 
     getUserId:function() {
-        return this.user_id;
+        return 1689258;//this.user_id;
     }
 };
 

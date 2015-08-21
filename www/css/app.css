@@ -1,0 +1,32 @@
+.game_list {
+    margin: 10px;
+}
+
+.game_list .game_item {
+    padding: 3px;
+    border: solid #A7A7A7 thin;
+    background-color: #FFFFFF;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+.game_item_part {
+    display: table-cell;
+    vertical-align: top;
+    padding-right: 10px;
+}
+
+.opponent_info {
+    display: table-cell;
+}
+
+.opponent_avatar {
+    display: block;
+    width: 65px;!important;
+    height: 65px;!important;
+    background-color: #E4E4E4;
+    padding: 5px;
+    background-image:url(http://vk.com/images/deactivated_50.gif);
+    background-repeat: no-repeat;
+    background-size: cover;
+}

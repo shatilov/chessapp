@@ -1,28 +1,31 @@
 /**
  * Created by mihai_000 on 19.08.2015.
  */
+var STATE_DRAFT = 'draft';
+var STATE_GAME = 'game';
 
 var chess_app = {
     div_class:"app",
+    opponent_ids:[],
     init:function(div_class){
         this.div_class = div_class;
         $('.'+this.div_class).html('loading...')
         this.loadProfilePage();
     },
     getUserGames:function(user_id){
-            var auth_key = ''
-            $("#user_games").append('<div colspan="5" align="center"><img width="30px" src="http://topchess.ru/vk/img/preloader.gif"/></div>')
-            var get_user_games_url = window.location.protocol+'//topchess.ru/api/?go=get_user_games'
+            var viewer_id = user_id
+            $("#user_games").html('<div colspan="5" align="center"><img width="30px" src="img/preloader.gif"/></div>')
+            var get_user_games_url = 'http://topchess.ru/api/?go=get_user_games'
 
             $.ajax({
                 type: "GET",
+                dataType: "jsonp",
                 cache: false,
                 random: new Date().getTime(),
                 url: get_user_games_url,
-                dataType: 'jsonp',
-                data:{ user_id : user_id , auth_key:auth_key } ,
-                success:function( data ) {
-                    alert('success');
+                data: {user_id: user_id }
+            }).done(function( data ) {
+                    $("#user_games").html("")
                     if(data.error)
                     {
                           $("#user_info").append("error");
@@ -34,7 +37,7 @@ var chess_app = {
                             data.forEach(function(item){
                                 var opponent_id , viewer_color
 
-                                if(item.opponent_id == viewer_id)
+                                if(item.opponent_id == user_id)
                                 {
                                     opponent_id = item.owner_id
                                     viewer_color = item.owner_color == 'w' ? 'b' : 'w'
@@ -44,32 +47,77 @@ var chess_app = {
                                     opponent_id = item.opponent_id
                                     viewer_color = item.owner_color
                                 }
+                                item.viewer_color = viewer_color
 
-                                if(opponent_id)opponent_ids.push(parseInt(opponent_id))
+                                item.text_status = item.text_status ?item.text_status:'';
 
-                                $("#user_games").append('<div class="game_item" id="'+item.game_id+'">'+item.game_id+'</div>')
+                                if(item.status == 'wdraw') item.text_status += ' - Р±РµР»С‹Рµ РїСЂРµРґР»Р°РіР°СЋС‚ РЅРёС‡СЊСЋ';
+                                if(item.status == 'bdraw') item.text_status += ' - С‡РµСЂРЅС‹Рµ РїСЂРµРґР»Р°РіР°СЋС‚ РЅРёС‡СЊСЋ';
+                                if(item.status == 'draw') item.text_status += ' - РЅРёС‡СЊСЏ';
+
+                                if(item.status == 'wdown') item.text_status += ' - Р±РµР»С‹Рµ СЃРґР°Р»РёСЃСЊ';
+                                if(item.status == 'bdown') item.text_status += ' - С‡РµСЂРЅС‹Рµ СЃРґР°Р»РёСЃСЊ';
+
+                                var state_text = "";
+                                if(item.state == STATE_GAME)
+                                {
+                                    if(item.last_color == viewer_color)
+                                    {
+                                        state_text = item.text_status;
+                                    }
+                                    else
+                                    {
+                                        state_text = '<b>Р’Р°С€ С…РѕРґ</b> '+item.text_status;
+                                    }
+                                }
+                                else
+                                {
+                                    state_text = item.text_status;
+                                }
+
+                                //if(opponent_id) this.opponent_ids.push(parseInt(opponent_id))
+                                html_str = '';
+                                html_str = $('.templates .game_item').clone();
+                                html_str.attr('id' , item.game_id);
+
+                                $('.game_id' , html_str).html( '#' + item.game_id);
+                                $('.opponent_name' , html_str).html('user id'+item.opponent_id).attr('id' , item.opponent_id);
+                                $('.game_state' , html_str).html(state_text);
+                                $('.date_last_turn' , html_str).html(item.date_last_turn?item.date_last_turn:'---');
+
+                                $(html_str).click(function(){
+                                    chess_app.loadGame(item.game_id)
+                                })
+                                $("#user_games").append(html_str)
                             })
                         }
                         else
                         {
-                            $('#user_games').html('<h3>У вас нет игр</h3><p>Вы можете пригласить друга для игры, а также войти или создать партию со случайным шахматистом</p>')
+                            $('#user_games').html('<h3>РЈ РІР°СЃ РЅРµС‚ РёРіСЂ</h3><p>Р’С‹ РјРѕР¶РµС‚Рµ РїСЂРёРіР»Р°СЃРёС‚СЊ РґСЂСѓРіР° РґР»СЏ РёРіСЂС‹, Р° С‚Р°РєР¶Рµ РІРѕР№С‚Рё РёР»Рё СЃРѕР·РґР°С‚СЊ РїР°СЂС‚РёСЋ СЃРѕ СЃР»СѓС‡Р°Р№РЅС‹Рј С€Р°С…РјР°С‚РёСЃС‚РѕРј</p>')
                         }
                     }
-                }
-            });
+                }).fail(function(){
+                    console.log('fail')
+                })
+
+    },
+    loadGame:function(game_id)
+    {
+        this.loadPage("app/game.html#"+game_id)
     },
     loadProfilePage:function()
     {
-        this.loadPage("app/profile.html")
+        this.loadPage("app/profile.html" , function() {})
     },
-    loadPage:function(url){
+    loadPage:function(url , onload){
         var $contentDiv = $('.'+this.div_class)
         $.ajax({
             url: url,
         }).done(function (data) {
             $contentDiv.html(data)
+            onload();
         }).fail(function(){
-            alert('Ошибка приложния. Обратитесь к разработчику');
+            alert('РћС€РёР±РєР° РїСЂРёР»РѕР¶РЅРёСЏ. РћР±СЂР°С‚РёС‚РµСЃСЊ Рє СЂР°Р·СЂР°Р±РѕС‚С‡РёРєСѓ');
         });
     }
 

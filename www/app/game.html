@@ -1,0 +1,49 @@
+<div width="100%" class="board_container" style="height: 40px">
+    <table width="100%">
+        <tr>
+            <td>
+                <a href="#" class="opponent_link">
+                    <div class="opponent_avatar" style="background-image:url(http://vk.com/images/deactivated_50.gif);"></div>
+                </a>
+            </td>
+            <td style="vertical-align: top">
+                <div style="padding-left: 5px" class="opponent_name"></div>
+            </td>
+            <td style="vertical-align: top;text-align: right">
+                <small>
+                    <div style="padding-left: 5px" class="date_start"></div>
+                    <div style="padding-left: 5px" class="date_last_move"></div>
+                </small>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div width="100%" class="board_container">
+    <p id="game_info">Информация об игре</p>
+    <div id="board" style="width: 100%"></div>
+</div>
+
+<div width="100%" class="board_container">
+    <br/>
+    <p id="time_time_info"></p>
+
+    <div class="history_controls">
+        <div class="btn-group btn-group-xs" role="group" aria-label="...">
+            <button type="button" class="history_back btn btn-default">&larr;</button>
+
+            <div class="btn-group btn-group-xs" role="group">
+                <button id="current_move" type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    <span class="current_move"></span>
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu scrollable-menu" role="menu" id="history"></ul>
+            </div>
+
+            <button type="button" class="history_forward btn btn-default">&rarr;</button>
+        </div>
+    </div>
+
+    <div id="game_control" class="btn-group btn-group-xs" style="padding-top: 20px"></div>
+
+</div>
